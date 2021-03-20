@@ -20,4 +20,4 @@ pub struct Switch {
     pub r: String,
 }
 
-pub const V_P: &str = "V+";
+pub const V_P: &str = "N0";

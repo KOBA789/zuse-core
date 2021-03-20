@@ -208,7 +208,7 @@ mod tests {
             switches: vec![
                 net::Switch {
                     state: "R1.B".to_string(),
-                    l: "V+".to_string(),
+                    l: "N0".to_string(),
                     r: "N1".to_string(),
                 },
             ],
@@ -229,12 +229,12 @@ mod tests {
             switches: vec![
                 net::Switch {
                     state: "SW1.A".to_string(),
-                    l: "V+".to_string(),
+                    l: "N0".to_string(),
                     r: "N2".to_string(),
                 },
                 net::Switch {
                     state: "SW2.A".to_string(),
-                    l: "V+".to_string(),
+                    l: "N0".to_string(),
                     r: "N5".to_string(),
                 },
                 net::Switch {
@@ -311,7 +311,7 @@ mod tests {
             switches: vec![
                 net::Switch {
                     state: "Cin.B".to_string(),
-                    l: "V+".to_string(),
+                    l: "N0".to_string(),
                     r: "N4".to_string(),
                 },
 
@@ -338,12 +338,12 @@ mod tests {
 
                 net::Switch {
                     state: "R2.B".to_string(),
-                    l: "V+".to_string(),
+                    l: "N0".to_string(),
                     r: "N12".to_string(),
                 },
                 net::Switch {
                     state: "R2.A".to_string(),
-                    l: "V+".to_string(),
+                    l: "N0".to_string(),
                     r: "N10".to_string(),
                 },
                 net::Switch {
