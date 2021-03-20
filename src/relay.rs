@@ -8,7 +8,7 @@ pub struct Spec {
 }
 
 impl Spec {
-    pub fn build(&self) -> Relay {
+    pub fn build(self) -> Relay {
         Relay {
             spec: self,
             level: false,
@@ -18,14 +18,14 @@ impl Spec {
 }
 
 #[derive(Debug, Clone)]
-pub struct Relay<'a> {
-    spec: &'a Spec,
+pub struct Relay {
+    spec: Spec,
 
     level: bool,
     is_middle: bool,
 }
 
-impl<'a> Relay<'a> {
+impl Relay {
     fn a(&self) -> bool {
         !self.is_middle && self.level
     }

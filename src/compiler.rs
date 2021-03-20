@@ -50,10 +50,10 @@ pub struct CircuitSpec {
 }
 
 impl CircuitSpec {
-    pub fn build(&self) -> Circuit {
+    pub fn build(self) -> Circuit {
         let state = vec![false; self.smap.map.len()];
         let net = vec![false; self.nmap.map.len()];
-        let relays = self.relays.iter().map(relay::Spec::build).collect();
+        let relays = self.relays.iter().cloned().map(relay::Spec::build).collect();
         let mut circuit = Circuit {
             spec: self,
             state,
@@ -66,14 +66,14 @@ impl CircuitSpec {
     }
 }
 
-pub struct Circuit<'a> {
-    spec: &'a CircuitSpec,
-    relays: Vec<Relay<'a>>,
+pub struct Circuit {
+    spec: CircuitSpec,
+    relays: Vec<Relay>,
     state: Vec<bool>,
     net: Vec<bool>,
 }
 
-impl<'a> Circuit<'a> {
+impl Circuit {
     pub fn get_state(&self, name: &str) -> Option<bool> {
         self.spec
             .smap
@@ -279,5 +279,146 @@ mod tests {
         circuit.simulate();
         assert_eq!(Some(false), circuit.get_net("N2"));
         assert_eq!(Some(false), circuit.get_net("N5"));
+    }
+
+    #[test]
+    fn test_fulladder() {
+        let netlist = net::Netlist {
+            relays: vec![
+                /*
+                net::Relay {
+                    coil: "N1".to_string(),
+                    a: "R1.A".to_string(),
+                    b: "R1.B".to_string(),
+                },
+                net::Relay {
+                    coil: "N1".to_string(),
+                    a: "R2.A".to_string(),
+                    b: "R2.B".to_string(),
+                },
+                */
+                net::Relay {
+                    coil: "N2".to_string(),
+                    a: "R3.A".to_string(),
+                    b: "R3.B".to_string(),
+                },
+                net::Relay {
+                    coil: "N2".to_string(),
+                    a: "R4.A".to_string(),
+                    b: "R4.B".to_string(),
+                },
+            ],
+            switches: vec![
+                net::Switch {
+                    state: "Cin.B".to_string(),
+                    l: "V+".to_string(),
+                    r: "N4".to_string(),
+                },
+
+                net::Switch {
+                    state: "R1.B".to_string(),
+                    l: "N5".to_string(),
+                    r: "N8".to_string(),
+                },
+                net::Switch {
+                    state: "R1.A".to_string(),
+                    l: "N5".to_string(),
+                    r: "N9".to_string(),
+                },
+                net::Switch {
+                    state: "R1.B".to_string(),
+                    l: "N3".to_string(),
+                    r: "N10".to_string(),
+                },
+                net::Switch {
+                    state: "R1.A".to_string(),
+                    l: "N3".to_string(),
+                    r: "N11".to_string(),
+                },
+
+                net::Switch {
+                    state: "R2.B".to_string(),
+                    l: "V+".to_string(),
+                    r: "N12".to_string(),
+                },
+                net::Switch {
+                    state: "R2.A".to_string(),
+                    l: "V+".to_string(),
+                    r: "N10".to_string(),
+                },
+                net::Switch {
+                    state: "R2.B".to_string(),
+                    l: "N4".to_string(),
+                    r: "N13".to_string(),
+                },
+                net::Switch {
+                    state: "R2.A".to_string(),
+                    l: "N4".to_string(),
+                    r: "N12".to_string(),
+                },
+
+                net::Switch {
+                    state: "R3.B".to_string(),
+                    l: "N9".to_string(),
+                    r: "N4".to_string(),
+                },
+                net::Switch {
+                    state: "R3.A".to_string(),
+                    l: "N8".to_string(),
+                    r: "N4".to_string(),
+                },
+                net::Switch {
+                    state: "R3.B".to_string(),
+                    l: "N8".to_string(),
+                    r: "N3".to_string(),
+                },
+                net::Switch {
+                    state: "R3.A".to_string(),
+                    l: "N9".to_string(),
+                    r: "N3".to_string(),
+                },
+                
+                net::Switch {
+                    state: "R3.B".to_string(),
+                    l: "N11".to_string(),
+                    r: "N6".to_string(),
+                },
+                net::Switch {
+                    state: "R3.A".to_string(),
+                    l: "N10".to_string(),
+                    r: "N6".to_string(),
+                },
+                net::Switch {
+                    state: "R3.B".to_string(),
+                    l: "N12".to_string(),
+                    r: "N7".to_string(),
+                },
+                net::Switch {
+                    state: "R3.A".to_string(),
+                    l: "N13".to_string(),
+                    r: "N7".to_string(),
+                },
+            ],
+        };
+        let circuit_spec = compile(&netlist);
+        let mut circuit = circuit_spec.build();
+        circuit.set_state("Cin.B", true);
+        circuit.set_state("R1.A", false);
+        circuit.set_state("R1.B", true);
+        circuit.set_state("R2.A", false);
+        circuit.set_state("R2.B", true);
+        circuit.simulate();
+        assert_eq!(Some(false), circuit.get_net("N5"));
+        assert_eq!(Some(false), circuit.get_net("N6"));
+        assert_eq!(Some(true), circuit.get_net("N7"));
+
+        circuit.set_state("R1.A", true);
+        circuit.set_state("R1.B", false);
+        circuit.set_state("R2.A", true);
+        circuit.set_state("R2.B", false);
+        circuit.simulate();
+        assert_eq!(Some(true), circuit.get_net("N5"));
+        assert_eq!(Some(false), circuit.get_net("N6"));
+        assert_eq!(Some(true), circuit.get_net("N7"));
     }
 }
