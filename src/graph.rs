@@ -27,7 +27,7 @@ impl Graph {
         let exists = self.nodes[n1]
             .edges
             .iter()
-            .any(|edge| edge.node_idx == n2);
+            .any(|edge| edge.node_idx == n2 && edge.sref == sref);
         if exists {
             return;
         }
